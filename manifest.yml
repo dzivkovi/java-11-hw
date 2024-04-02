@@ -1,0 +1,13 @@
+version: 2
+team: r2d2
+application:
+  name: java-11-hw
+  type: java
+  runtime_version: 17
+deployment:
+  targetService: K8S
+  project:
+    id:
+      ccx-web-nonprod: [dev, uat]
+      ccx-web-prod: [stg, prod]
+    alias: web
