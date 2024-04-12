@@ -33,7 +33,7 @@ cd tldr-everything
 #### Clone it
 
 ```bash
-git clone https://c_dzivkovic@bitbucket.org/cogeco-it/hello-nodejs-typescript.git
+git clone https://github.com/larkintuckerllc/hello-nodejs-typescript.git
 
 cd hello-nodejs-typescript
 rm -rf .git
