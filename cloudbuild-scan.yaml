@@ -1,23 +1,29 @@
 steps:
-  name: 'gcr.io/$PROJECT_ID/sonar-scanner:latest'
-  entrypoint: bash
-  args:
-    - '-c'
-    - |
-      sonar-scanner \
-        -Dsonar.projectKey=dzivkovi_java-11-hw \
-        -Dsonar.projectName=java-11-hw \
-        -Dsonar.host.url=https://sonarcloud.io \
-        -Dsonar.token=${_SONAR_TOKEN} \
-        -Dsonar.sources=. \
-        -Dsonar.java.binaries=**/target/classes \
-        -Dsonar.java.source=1.8 \
-        -Dsonar.java.libraries=**/target/*.jar \
-        -Dsonar.exclusions=**/idea/**,**doc/** \
-        -Dsonar.analysis.mode=publish
+  - name: 'gcr.io/cloud-builders/mvn'
+    entrypoint: bash
+    args:
+      - '-c'
+      - |
+        echo "Starting SonarQube analysis..."
+        mvn verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+          -Dsonar.projectKey=dzivkovi_java-11-hw \
+          -Dsonar.projectName=java-11-hw \
+          -Dsonar.organization=dzivkovi \
+          -Dsonar.host.url=https://sonarcloud.io \
+          -Dsonar.token="${_SONAR_TOKEN}" \
+          -Dsonar.sources=src/main/java \
+          -Dsonar.tests=src/test/java \
+          -Dsonar.java.binaries=target/classes \
+          -Dsonar.java.source=1.8 \
+          -Dsonar.java.libraries=target/*.jar \
+          -Dsonar.exclusions=**/idea/**,**/doc/** \
+          -Dsonar.test.exclusions=**/target/**,**/*.xml,**/*.json,**/*.txt \
+          -Dsonar.coverage.exclusions=**/mkyong/error/**,**/mkyong/test/** \
+          -Dsonar.analysis.mode=publish
+        echo "SonarQube analysis completed."
 
 options:
   dynamic_substitutions: true
 
 substitutions:
-  _SONAR_TOKEN: 'your-sonar-token'
+  _SONAR_TOKEN: ''  # Remains empty in the YAML, set this variable at trigger time or via command line
