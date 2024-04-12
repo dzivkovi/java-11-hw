@@ -1,0 +1,23 @@
+steps:
+  name: 'gcr.io/$PROJECT_ID/sonar-scanner:latest'
+  entrypoint: bash
+  args:
+    - '-c'
+    - |
+      sonar-scanner \
+        -Dsonar.projectKey=dzivkovi_java-11-hw \
+        -Dsonar.projectName=java-11-hw \
+        -Dsonar.host.url=https://sonarcloud.io \
+        -Dsonar.token=${_SONAR_TOKEN} \
+        -Dsonar.sources=. \
+        -Dsonar.java.binaries=**/target/classes \
+        -Dsonar.java.source=1.8 \
+        -Dsonar.java.libraries=**/target/*.jar \
+        -Dsonar.exclusions=**/idea/**,**doc/** \
+        -Dsonar.analysis.mode=publish
+
+options:
+  dynamic_substitutions: true
+
+substitutions:
+  _SONAR_TOKEN: 'your-sonar-token'
