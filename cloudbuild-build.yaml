@@ -1,0 +1,28 @@
+steps:
+- name: 'gcr.io/k8s-skaffold/pack'
+  entrypoint: 'sh'
+  args:
+  - '-c'
+  - |
+    pack build $_REGION-docker.pkg.dev/$PROJECT_ID/$_REPOSITORY/$_SERVICE_NAME:$_TAG \
+      --builder=gcr.io/buildpacks/builder \
+      --env=GOOGLE_RUNTIME_VERSION=$_APPLICATION_RUNTIME_VERSION \
+      --path . \
+      --network cloudbuild
+
+images:
+- '$_IMAGE_NAME'
+
+options:
+  substitution_option: 'ALLOW_LOOSE'
+  dynamic_substitutions: true
+
+substitutions:
+  _REPOSITORY: 'r2d2'
+  _SERVICE_NAME: 'java-11-hw'
+  _APPLICATION_RUNTIME_VERSION: '17'
+  _REGION: 'us-central1'  # Default value, can be overridden
+  _TAG: $SHORT_SHA        # $SHORT_SHA defined for builds invoked by triggers
+  _IMAGE_NAME: '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/${_SERVICE_NAME}:${_TAG}'
+# fixed substitutions as per advice in:
+# https://stackoverflow.com/questions/73176741/google-cloud-build-with-pack-and-secrets-manager-not-accessing-environment-varia
