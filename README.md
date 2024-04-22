@@ -91,76 +91,90 @@ git checkout -b stg
 git push -u origin stg
 ```
 
-### Switch back to 'dev' to start development work
+## Development Work
+
+### Get the latest code from 'dev' branch
 
 ```bash
 git checkout dev
+git pull  # Ensure you have the latest changes
 ```
 
-### Committing Changes in Feature Branch
+### Create a new branch for your feature
 
 ```bash
 git checkout -b feature/my-new-feature
 ```
 
-#### Add your changes to the staging area
+#### Note
+
+This command is correct for creating a new feature branch from the current branch, which will be `dev` if the previous steps were followed correctly. However, if there is any concern about the user possibly not being on dev (due to manual errors or interruptions), explicitly specifying the parent branch can avoid such issues:
+
+```bash
+git checkout -b feature/my-new-feature dev
+```
+
+### Committing changes in feature branch
+
+Add your changes and commit them:
 
 ```bash
 git add .
 git commit -m "Add my new feature"
-git push origin feature/my-new-feature
 ```
 
-### Creating a Pull Request from Feature Branch to `dev` using GUI or
+Push your feature branch to the remote repository:
+
+```bash
+git push -u origin feature/my-new-feature  # The '-u' flag sets the upstream branch
+```
+
+### Creating a Pull Request
+
+Create a pull request from your feature branch to `dev` using the GitHub CLI or GUI:
 
 ```bash
 gh pr create --base dev --head feature/my-new-feature --title "My New Feature" --body "Description of my new feature"
 ```
 
-### Merging Pull Requests can be done via via Command Line
+#### Review and Merge Pull Requests
 
-#### Ensure local repo is up to date with the latest changes from the remote
+After your pull request is reviewed and approved, merge it through the GitHub website. Choose the appropriate merge strategy (Merge commit, Squash and merge, Rebase and merge).
 
-```bash
-git pull origin dev
-```
+### Post-Merge Cleanup
 
-#### Switch to the base branch of the pull request
+After the pull request is merged:
 
-```bash
-git checkout dev
-```
+1. **Update Your Local 'dev' Branch**:
+   Switch to the `dev` branch and pull the latest changes.
 
-#### Merge the head branch into the base branch
+    ```bash
+    git checkout dev
+    git pull
+    ```
 
-```bash
-git merge feature/my-new-feature
-```
+2. **Delete the Local and Remote Feature Branches**:
+   Clean up your branches after the merge.
 
-#### Push the changes
+    ```bash
+    # Delete the local branch
+    git branch -d feature/my-new-feature
 
-```bash
-git push -u origin dev
-```
+    # Delete the remote branch
+    git push origin --delete feature/my-new-feature
+    ```
 
-### Post Dev-merge cleanup
+Deleting the feature branch locally and remotely after the merge helps keep the repository clean and manageable. Ensure that the pull request is fully merged before attempting to delete the branches to avoid losing work.
 
-#### Deleting the local feature branch after merge
+### Continue Development Work
 
-```bash
-git branch -d feature/my-new-feature
-```
-
-#### Delete it remotely as well, so that Cloud Build trigger can clean up demo environment
-
-```bash
-git push origin --delete feature/my-new-feature
-```
-
-### Continue Development work
+Ready to start on the next feature:
 
 ```bash
 git checkout dev
+git pull  # Ensure you have the latest changes
+# Optionally start a new feature branch
+git checkout -b feature/my-next-feature
 ```
 
 ## Prepare the GCP environment
@@ -206,10 +220,10 @@ gcloud projects add-iam-policy-binding ${PROJECT_ID} --member=serviceAccount:${P
 #### Or create new SA
 
 ```bash
-SERVICE_ACCOUNT=packt-cloudbuild-chp4-sa
+SERVICE_ACCOUNT=my-cloudbuild-sa
 
 gcloud iam service-accounts create ${SERVICE_ACCOUNT} \
---description="Temporary SA for chp 4 exercises" \
+--description="Temporary Service Account" \
 --display-name="${SERVICE_ACCOUNT}"
 
 gcloud projects add-iam-policy-binding ${PROJECT_ID} \
@@ -224,4 +238,5 @@ gcloud projects add-iam-policy-binding ${PROJECT_ID} \
 
 ### Learn more
 
-`https://github.com/GoogleCloudPlatform/cloud-build-sample`
+- [Cloud Native Automation with Google Cloud Build](https://www.packtpub.com/product/cloud-native-automation-with-google-cloud-build/9781801816700)
+- [Code examples used in the official Cloud Build documentation](https://github.com/GoogleCloudPlatform/cloud-build-samples)
