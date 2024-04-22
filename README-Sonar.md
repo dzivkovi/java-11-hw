@@ -59,7 +59,7 @@ sh ./run_sonar_analysis.sh
 To integrate SonarQube analysis into Google Cloud Build, use the following command:
 
 ```bash
-gcloud builds submit --config cloudbuild-scan.yaml --substitutions=_SONAR_TOKEN="$SONAR_TOKEN"
+gcloud builds submit --config cloudbuild-sonar.yaml --substitutions=_SONAR_TOKEN="$SONAR_TOKEN"
 ```
 
 ## Final Notes
