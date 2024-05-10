@@ -202,14 +202,16 @@ gcloud services enable cloudbuild.googleapis.com artifactregistry.googleapis.com
 ```bash
 export REPOSITORY=r2d2
 
-gcloud artifacts repositories create ${REPOSITORY} --repository-format=Docker -location ${REGION}
+gcloud artifacts repositories create ${REPOSITORY} --repository-format=Docker --location ${REGION}
 
 gcloud artifacts docker images list $REGION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY --include-tags
 ```
 
 ### Use Cloud Build Service account (SA)
 
-Default coud build SA
+See the "Using minimal IAM permissions" section in the [Deploying to Cloud Run using Cloud Build](https://cloud.google.com/build/docs/deploying-builds/deploy-cloud-run#continuous-iam) page.
+
+#### Default SA
 
 ```bash
 SERVICE_ACCOUNT=cloudbuild
@@ -217,7 +219,9 @@ SERVICE_ACCOUNT=cloudbuild
 gcloud projects add-iam-policy-binding ${PROJECT_ID} --member=serviceAccount:${PROJECT_NUMBER}@${SERVICE_ACCOUNT}.gserviceaccount.com --role=roles/artifactregistry.writer
 ```
 
-#### Or create new SA
+#### Ceate a new SA
+
+If you don't have permission to update Cloud Build Service Account, create a new one:
 
 ```bash
 SERVICE_ACCOUNT=my-cloudbuild-sa
@@ -233,7 +237,7 @@ gcloud projects add-iam-policy-binding ${PROJECT_ID} \
 --role="roles/storage.admin" \
 --role="roles/logging.logWriter" \
 --role="roles/artifactregistry.admin" \
---role="roles/compute.admin
+--role="roles/compute.admin"
 ```
 
 ### Learn more

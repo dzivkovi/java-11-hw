@@ -6,9 +6,11 @@ steps:
       - |
         echo "Starting SonarQube analysis..."
         mvn verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
-          -Dsonar.login="${_SONAR_LOGIN}" \
-          -Dsonar.projectKey=${_SONAR_PROJECTKEY} \
-          -Dsonar.host.url=${_SONAR_HOST} \
+          -Dsonar.projectKey=dzivkovi_java-11-hw \
+          -Dsonar.projectName=java-11-hw \
+          -Dsonar.organization=dzivkovi \
+          -Dsonar.host.url=https://sonarcloud.io \
+          -Dsonar.token="${_SONAR_TOKEN}" \
           -Dsonar.sources=src/main/java \
           -Dsonar.tests=src/test/java \
           -Dsonar.java.binaries=target/classes \
@@ -24,6 +26,4 @@ options:
   dynamic_substitutions: true
 
 substitutions:
-  _SONAR_LOGIN:       ''  # Remains empty in the YAML, set this variable at trigger time or via command line
-  _SONAR_PROJECTKEY:  ''
-  _SONAR_HOST:        ''
+  _SONAR_TOKEN: ''  # Remains empty in the YAML, set this variable at trigger time or via command line

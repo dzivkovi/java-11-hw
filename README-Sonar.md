@@ -48,6 +48,12 @@ To run the analysis through Maven, use the following command:
 mvn verify sonar:sonar -Dsonar.projectKey=your_sonarqube_project_key -Dsonar.organization=your_sonarqube_project -Dsonar.host.url='https://sonarcloud.io'
 ```
 
+or
+
+```bash
+ mvn verify sonar:sonar -Dsonar.projectKey=$SONAR_PROJECTKEY -Dsonar.host.url=$SONAR_HOST -Dsonar.login=$SONAR_LOGIN
+```
+
 If you want Maven to use the same `sonar-project.properties` configuration file, you can use this custom script instead of having to map the properties manually to command line arguments:
 
 ```bash
