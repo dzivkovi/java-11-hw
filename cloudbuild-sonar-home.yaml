@@ -19,7 +19,7 @@ steps:
           -Dsonar.exclusions=**/idea/**,**/doc/** \
           -Dsonar.test.exclusions=**/target/**,**/*.xml,**/*.json,**/*.txt \
           -Dsonar.coverage.exclusions=**/mkyong/error/**,**/mkyong/test/** \
-          -Dsonar.analysis.mode=publish
+          -Dsonar.analysis.mode=publish && \
         echo "SonarQube analysis completed."
 
 options:
