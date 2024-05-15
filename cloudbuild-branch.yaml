@@ -1,0 +1,45 @@
+# Losely based on the existing "manifest.yml" file and the GCP labs: 
+# https://github.com/GoogleCloudPlatform/software-delivery-workshop/tree/main/labs/cloudrun-progression
+
+# Default Values
+substitutions:
+#  _TEAM: r2d2
+  _APPLICATION_NAME: java-11-hw 
+  _APPLICATION_RUNTIME_VERSION: "17"
+  _REGION: us-central1
+  _AUTHENTICATION: "--allow-unauthenticated"
+
+steps:
+
+### Build
+  - id: "build image from source"
+    name: "gcr.io/cloud-builders/gcloud"
+    entrypoint: "bash"
+    args: 
+      - '-c'
+      - |
+          gcloud builds submit --project=${PROJECT_ID} --pack \
+            "image=gcr.io/${PROJECT_ID}/${_APPLICATION_NAME},env=\"GOOGLE_RUNTIME_VERSION=${_APPLICATION_RUNTIME_VERSION}\""
+
+### Test
+  - id: "run tests"
+    name: "gcr.io/cloud-builders/gcloud"
+    entrypoint: "bash"
+    args: 
+      - '-c'
+      - |
+          echo "No tests to run at this time."
+
+### Deploy
+  - id: "deploy image as a branch-named app"
+    name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    entrypoint: "bash"
+    args: 
+      - '-c'
+      - |
+          gcloud run deploy ${_APPLICATION_NAME} ${_AUTHENTICATION} \
+            --platform managed \
+            --project ${PROJECT_ID} \
+            --region ${_REGION} \
+            --image gcr.io/${PROJECT_ID}/${_APPLICATION_NAME}
+
