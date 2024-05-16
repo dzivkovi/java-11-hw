@@ -6,7 +6,7 @@ Replace my username (dzivkovi), GitHub repo and Git project specific info by you
 
 ### Authenticate with GitHub
 
-```bash
+```sh
 gh auth login
 
 # or alternatively use the environment GITHUB_TOKEN
@@ -16,7 +16,7 @@ export GITHUB_TOKEN='ghp_xxx'
 
 ### Configure Git
 
-```bash
+```sh
 git config --global user.email "your_email@example.com"
 git config --global user.name "Your Name"
 ```
@@ -25,14 +25,14 @@ git config --global user.name "Your Name"
 
 #### Create it
 
-```bash
+```sh
 gcloud storage cp -r gs://pls-resource-bucket/tldr-everything .
 cd tldr-everything
 ```
 
 #### Clone it
 
-```bash
+```sh
 git clone https://github.com/larkintuckerllc/hello-nodejs-typescript.git
 
 cd hello-nodejs-typescript
@@ -41,22 +41,22 @@ rm -rf .git
 
 ### Initialize local Git repo
 
-```bash
+```sh
 git init
 git checkout -b main
 git add .
-git commit -m "Initial Cloud Build scripts"
+git commit -m "Initial commit"
 ```
 
 ### Create new private repository on GitHub
 
-```bash
+```sh
 gh repo create hello-nodejs-typescript --private
 ```
 
 ### Push the new branch upstream ('-u') to the Remote Repository
 
-```bash
+```sh
 git remote add origin https://github.com/dzivkovi/hello-nodejs-typescript.git
 git branch -M main
 git push -u origin main
@@ -66,43 +66,43 @@ git push -u origin main
 
 ### Switch to the main branch, to ensure we're starting from the right place
 
-```bash
+```sh
 git checkout main
 ```
 
 ### Create the Development branch for development work and push it to GitHub
 
-```bash
+```sh
 git checkout -b dev
 git push -u origin dev
 ```
 
-### Create the branch for User Acceptance Testing and push it to GitHub
+~~### Create the branch for User Acceptance Testing and push it to GitHub~~
 
-```bash
-git checkout -b uat
-git push -u origin uat
-```
+~~```sh~~
+~~git checkout -b uat~~
+~~git push -u origin uat~~
+~~```~~
 
-### Create the branch for the Staging environment and push it to GitHub
+~~### Create the branch for the Staging environment and push it to GitHub~~
 
-```bash
-git checkout -b stg
-git push -u origin stg
-```
+~~```sh~~
+~~git checkout -b stg~~
+~~git push -u origin stg~~
+~~```~~
 
 ## Development Work
 
-### Get the latest code from 'dev' branch
+~~### Get the latest code from 'dev' branch~~
 
-```bash
-git checkout dev
-git pull  # Ensure you have the latest changes
-```
+~~```sh~~
+~~git checkout dev~~
+~~git pull  # Ensure you have the latest changes~~
+~~```~~
 
 ### Create a new branch for your feature
 
-```bash
+```sh
 git checkout -b feature/my-new-feature
 ```
 
@@ -110,22 +110,32 @@ git checkout -b feature/my-new-feature
 
 This command is correct for creating a new feature branch from the current branch, which will be `dev` if the previous steps were followed correctly. However, if there is any concern about the user possibly not being on dev (due to manual errors or interruptions), explicitly specifying the parent branch can avoid such issues:
 
-```bash
+```sh
 git checkout -b feature/my-new-feature dev
 ```
+
+### Make sure you have the latest code from the 'dev' branch
+
+Rebase option ensures you changes (if any) are kept on top:
+
+```sh
+git pull origin dev --rebase
+```
+
+### Do your work
 
 ### Committing changes in feature branch
 
 Add your changes and commit them:
 
-```bash
+```sh
 git add .
 git commit -m "Add my new feature"
 ```
 
 Push your feature branch to the remote repository:
 
-```bash
+```sh
 git push -u origin feature/my-new-feature  # The '-u' flag sets the upstream branch
 ```
 
@@ -133,7 +143,7 @@ git push -u origin feature/my-new-feature  # The '-u' flag sets the upstream bra
 
 Create a pull request from your feature branch to `dev` using the GitHub CLI or GUI:
 
-```bash
+```sh
 gh pr create --base dev --head feature/my-new-feature --title "My New Feature" --body "Description of my new feature"
 ```
 
@@ -148,7 +158,7 @@ After the pull request is merged:
 1. **Update Your Local 'dev' Branch**:
    Switch to the `dev` branch and pull the latest changes.
 
-    ```bash
+    ```sh
     git checkout dev
     git pull
     ```
@@ -156,7 +166,7 @@ After the pull request is merged:
 2. **Delete the Local and Remote Feature Branches**:
    Clean up your branches after the merge.
 
-    ```bash
+    ```sh
     # Delete the local branch
     git branch -d feature/my-new-feature
 
@@ -170,18 +180,35 @@ Deleting the feature branch locally and remotely after the merge helps keep the 
 
 Ready to start on the next feature:
 
-```bash
+```sh
 git checkout dev
 git pull  # Ensure you have the latest changes
 # Optionally start a new feature branch
 git checkout -b feature/my-next-feature
 ```
 
-## Prepare the GCP environment
+## Build/Deploy Process
 
-One-off acrivites, that might have already been performed by you GCP or Project admins:
+### Prepare the GCP environment
 
-```bash
+One-off acrivites, that might have already been performed by your GCP or Project admins:
+
+```sh
+# Enabled GCP Services
+gcloud services enable cloudbuild.googleapis.com artifactregistry.googleapis.com \
+    run.googleapis.com eventarc.googleapis.com \
+    logging.googleapis.com
+
+# Create the repository for docker images 
+export REPOSITORY=r2d2
+gcloud artifacts repositories create ${REPOSITORY} --repository-format=Docker --location ${REGION}
+
+```
+
+### Set up the environment
+
+```sh
+# Set the project ID and region
 export PROJECT_ID=$(gcloud config get-value project)
 export PROJECT_NUMBER="$(gcloud projects describe ${PROJECT_ID} --format='get(projectNumber)')"
 
@@ -192,18 +219,8 @@ if [ "$REGION" = "(unset)" ] || [ -z "$REGION" ]; then
 fi
 echo "Region set to: $REGION"
 
-gcloud services enable cloudbuild.googleapis.com artifactregistry.googleapis.com \
-    run.googleapis.com eventarc.googleapis.com \
-    logging.googleapis.com
-```
-
-### Artifact Registry
-
-```bash
+# See artifact registry repository content
 export REPOSITORY=r2d2
-
-gcloud artifacts repositories create ${REPOSITORY} --repository-format=Docker --location ${REGION}
-
 gcloud artifacts docker images list $REGION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY --include-tags
 ```
 
@@ -213,7 +230,7 @@ See the "Using minimal IAM permissions" section in the [Deploying to Cloud Run u
 
 #### Default SA
 
-```bash
+```sh
 SERVICE_ACCOUNT=cloudbuild
 
 gcloud projects add-iam-policy-binding ${PROJECT_ID} --member=serviceAccount:${PROJECT_NUMBER}@${SERVICE_ACCOUNT}.gserviceaccount.com --role=roles/artifactregistry.writer
@@ -223,7 +240,7 @@ gcloud projects add-iam-policy-binding ${PROJECT_ID} --member=serviceAccount:${P
 
 If you don't have permission to update Cloud Build Service Account, create a new one:
 
-```bash
+```sh
 SERVICE_ACCOUNT=my-cloudbuild-sa
 
 gcloud iam service-accounts create ${SERVICE_ACCOUNT} \
