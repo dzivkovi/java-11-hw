@@ -10,11 +10,13 @@ substitutions:
   _APPLICATION_NAME: java-11-hw 
   _APPLICATION_RUNTIME_VERSION: "17"
   _REGION: us-central1
+
   _AUTHENTICATION: "--allow-unauthenticated"
   _IMAGE_NAME: "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_TEAM}/${_APPLICATION_NAME}"
   _TAG: ${SHORT_SHA:-"shell-run"}       # $SHORT_SHA defined when invoked by triggers
   _BRANCH_NAME: ${BRANCH_NAME:-"demo"}  # $BRANCH_NAME defined when invoked by triggers
-  _SANITIZED_BRANCH_NAME: $(echo ${_BRANCH_NAME} | sed 's/[^a-zA-Z0-9-]/-/g')
+  # Service name cannot exceed 63 characters, pulse it can contain only letters, numbers, and hyphens
+  _SERVICE_NAME: $(echo ${_APPLICATION_NAME}-${_BRANCH_NAME} | sed 's/[^a-zA-Z0-9-]/-/g' | cut -c1-63)
 
 # Allow dynamic variable substitutions
 options:
@@ -62,7 +64,7 @@ steps:
     args: 
       - '-c'
       - |
-          gcloud run deploy ${_APPLICATION_NAME}-${_SANITIZED_BRANCH_NAME} ${_AUTHENTICATION} \
+          gcloud run deploy ${_SERVICE_NAME} ${_AUTHENTICATION} \
             --platform managed \
             --project $PROJECT_ID \
             --region ${_REGION} \

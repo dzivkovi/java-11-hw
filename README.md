@@ -202,7 +202,6 @@ gcloud services enable cloudbuild.googleapis.com artifactregistry.googleapis.com
 # Create the repository for docker images 
 export REPOSITORY=r2d2
 gcloud artifacts repositories create ${REPOSITORY} --repository-format=Docker --location ${REGION}
-
 ```
 
 ### Set up the environment
@@ -257,7 +256,28 @@ gcloud projects add-iam-policy-binding ${PROJECT_ID} \
 --role="roles/compute.admin"
 ```
 
-### Learn more
+## Enabling Branch Deployments
+
+### Setup Branch Trigger
+
+In this section, you enable developers with a unique URL for development branches in Git. Each branch is represented by a URL identified by the branch name. Commits to the branch trigger a deployment, and the updates are accessible at that same URL.  
+
+- Set up the trigger:
+
+```sh
+gcloud builds triggers create github \
+--name=branchtrigger \
+--repository=$REPO_NAME \
+--branch-pattern='[^(?!.*main)].*' \
+--build-config=cloudbuild-branch.yaml \
+--region=$REGION
+```
+
+- Review the trigger
+
+by going to the [Cloud Build Triggers page](https://console.cloud.google.com/cloud-build/triggers) in the Cloud Console:
+
+## Learn more
 
 - [Cloud Native Automation with Google Cloud Build](https://www.packtpub.com/product/cloud-native-automation-with-google-cloud-build/9781801816700)
 - [Code examples used in the official Cloud Build documentation](https://github.com/GoogleCloudPlatform/cloud-build-samples)
