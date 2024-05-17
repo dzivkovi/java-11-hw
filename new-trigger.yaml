@@ -1,9 +1,0 @@
-name: new-trigger
-description: Better Description for the new trigger
-filename: cloudbuild-branch.yaml
-github:
-  name: java-11-hw
-  owner: dzivkovi
-  push:
-    branch: ^main$
-    invertRegex: true
