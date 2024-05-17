@@ -64,9 +64,9 @@ steps:
       - '-c'
       - |
           set -e  # Exit on error
-          aaa=$(echo ${_APPLICATION_NAME}-${_BRANCH_NAME} \
+          app=$(echo ${_APPLICATION_NAME}-${_BRANCH_NAME} \
             | sed 's/[^a-zA-Z0-9-]/-/g' | cut -c1-63)
-          gcloud run deploy ${aaa} ${_AUTHENTICATION} \
+          gcloud run deploy ${app} ${_AUTHENTICATION} \
             --platform managed \
             --project $PROJECT_ID \
             --region ${_REGION} \
