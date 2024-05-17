@@ -1,7 +1,9 @@
 name: branch-trigger
-description: Trigger builds on all branches except main, master, dev, and develop
-triggerTemplate:
-  repoName: java-11-hw
-  branchName: (main|master|dev|develop)   
-  invertRegex: true      
+description: Trigger builds on all branches but main, master, dev, and develop
+github:
+  name: java-11-hw
+  owner: dzivkovi
+  push:
+    branch: ^(main|master|dev|develop)$
+    invertRegex: true
 filename: cloudbuild-branch.yaml
