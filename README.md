@@ -266,11 +266,8 @@ In this section, you enable developers with a unique URL for development branche
 
 ```sh
 gcloud builds triggers create github \
---name=branchtrigger \
---repository=$REPO_NAME \
---branch-pattern='[^(?!.*main)].*' \
---build-config=cloudbuild-branch.yaml \
---region=$REGION
+  --config-from-file=branch-trigger.yaml \
+  --region=$REGION
 ```
 
 - Review the trigger

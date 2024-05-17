@@ -1,8 +1,7 @@
 name: branch-trigger
 description: Trigger builds on all branches except main, master, dev, and develop
 triggerTemplate:
-  projectId: dialogflow-dan
   repoName: java-11-hw
   branchName: (main|master|dev|develop)   
   invertRegex: true      
-  buildConfig: cloudbuild-branch.yaml
+filename: cloudbuild-branch.yaml
