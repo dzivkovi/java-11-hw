@@ -30,20 +30,19 @@ steps:
     args:
     - '-c'
     - |
-      pack build ${_IMAGE_NAME} \
+      pack build ${_IMAGE_NAME}:${_TAG} \
         --builder=gcr.io/buildpacks/builder \
         --env=GOOGLE_RUNTIME_VERSION=${_APPLICATION_RUNTIME_VERSION} \
         --path . \
         --network cloudbuild
 
-### Tag and Push
-  - id: "tag and push the image"
+### Push
+  - id: "push the image"
     name: "gcr.io/cloud-builders/docker"
     entrypoint: "sh"
     args: 
       - '-c'
       - |
-          docker tag ${_IMAGE_NAME} ${_IMAGE_NAME}:${_TAG} && \
           docker push ${_IMAGE_NAME}:${_TAG}
 
 ### Test
