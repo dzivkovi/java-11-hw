@@ -190,6 +190,37 @@ git pull  # Ensure you have the latest changes
 git checkout -b feature/my-next-feature
 ```
 
+## Development Branch Protection Rules
+
+To prevent direct changes to the `dev` branch, you would need to set up branch protection rules in your Git repository. The process for setting up these rules varies depending on the platform you're using (GitHub, GitLab, Bitbucket, etc.). Here's a general guide on how to do it:
+
+### GitHub
+
+1. Go to your repository and click on "Settings".
+2. Click on "Branches" in the left sidebar.
+3. In the "Branch protection rules" section, click "Add rule".
+4. In the "Branch name pattern" field, enter `dev`.
+5. Check "Require pull request reviews before merging".
+6. Click "Create" to save the rule.
+
+### GitLab
+
+1. Go to your project and click on "Settings".
+2. Click on "Repository" in the left sidebar.
+3. Scroll down to "Protected Branches".
+4. In the "Branch" field, select `dev`.
+5. In the "Allowed to push" and "Allowed to merge" fields, select the roles you want to allow.
+6. Click "Protect" to save the rule.
+
+### Bitbucket
+
+1. Go to your repository and click on "Settings".
+2. Click on "Branch permissions" under "Workflow".
+3. Click "Add a branch permission".
+4. In the "Branch name or pattern" field, enter `dev`.
+5. Under "Write access", select the users or groups you want to allow.
+6. Click "Save" to save the rule.
+
 ## Build/Deploy Process
 
 ### Prepare the GCP environment
