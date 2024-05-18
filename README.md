@@ -136,7 +136,8 @@ git commit -m "Add my new feature"
 Push your feature branch to the remote repository:
 
 ```sh
-git push -u origin feature/my-new-feature  # The '-u' flag sets the upstream branch
+git push -u origin feature/my-new-feature  
+# The '-u' flag sets the upstream branch
 ```
 
 ### Creating a Pull Request
@@ -144,7 +145,9 @@ git push -u origin feature/my-new-feature  # The '-u' flag sets the upstream bra
 Create a pull request from your feature branch to `dev` using the GitHub CLI or GUI:
 
 ```sh
-gh pr create --base dev --head feature/my-new-feature --title "My New Feature" --body "Description of my new feature"
+gh pr create --base dev --head feature/my-new-feature \
+  --title "My New Feature" \
+  --body "Description of my new feature"
 ```
 
 #### Review and Merge Pull Requests
@@ -195,13 +198,15 @@ One-off acrivites, that might have already been performed by your GCP or Project
 
 ```sh
 # Enabled GCP Services
-gcloud services enable cloudbuild.googleapis.com artifactregistry.googleapis.com \
-    run.googleapis.com eventarc.googleapis.com \
-    logging.googleapis.com
+gcloud services enable \
+  cloudbuild.googleapis.com artifactregistry.googleapis.com \
+  run.googleapis.com eventarc.googleapis.com \
+  logging.googleapis.com
 
 # Create the repository for docker images 
 export REPOSITORY=r2d2
-gcloud artifacts repositories create ${REPOSITORY} --repository-format=Docker --location ${REGION}
+gcloud artifacts repositories create ${REPOSITORY} \
+  --repository-format=Docker --location ${REGION}
 ```
 
 ### Set up the environment
@@ -220,7 +225,9 @@ echo "Region set to: $REGION"
 
 # See artifact registry repository content
 export REPOSITORY=r2d2
-gcloud artifacts docker images list $REGION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY --include-tags
+gcloud artifacts docker images list \
+  $REGION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY \
+  --include-tags
 ```
 
 ### Use Cloud Build Service account (SA)
@@ -232,7 +239,9 @@ See the "Using minimal IAM permissions" section in the [Deploying to Cloud Run u
 ```sh
 SERVICE_ACCOUNT=cloudbuild
 
-gcloud projects add-iam-policy-binding ${PROJECT_ID} --member=serviceAccount:${PROJECT_NUMBER}@${SERVICE_ACCOUNT}.gserviceaccount.com --role=roles/artifactregistry.writer
+gcloud projects add-iam-policy-binding ${PROJECT_ID} \
+  --member=serviceAccount:${PROJECT_NUMBER}@${SERVICE_ACCOUNT}.gserviceaccount.com \
+  --role=roles/artifactregistry.writer
 ```
 
 #### Ceate a new SA
@@ -243,17 +252,17 @@ If you don't have permission to update Cloud Build Service Account, create a new
 SERVICE_ACCOUNT=my-cloudbuild-sa
 
 gcloud iam service-accounts create ${SERVICE_ACCOUNT} \
---description="Temporary Service Account" \
---display-name="${SERVICE_ACCOUNT}"
+  --description="Temporary Service Account" \
+  --display-name="${SERVICE_ACCOUNT}"
 
 gcloud projects add-iam-policy-binding ${PROJECT_ID} \
---member="serviceAccount:${SERVICE_ACCOUNT}@${PROJECT_ID}.iam.gserviceaccount.com" \
---role="roles/iam.serviceAccountUser" \
---role="roles/cloudasset.owner" \
---role="roles/storage.admin" \
---role="roles/logging.logWriter" \
---role="roles/artifactregistry.admin" \
---role="roles/compute.admin"
+  --member="serviceAccount:${SERVICE_ACCOUNT}@${PROJECT_ID}.iam.gserviceaccount.com" \
+  --role="roles/iam.serviceAccountUser" \
+  --role="roles/cloudasset.owner" \
+  --role="roles/storage.admin" \
+  --role="roles/logging.logWriter" \
+  --role="roles/artifactregistry.admin" \
+  --role="roles/compute.admin"
 ```
 
 ## Enabling Branch Deployments
@@ -265,14 +274,17 @@ In this section, you enable developers with a unique URL for development branche
 - Set up the trigger:
 
 ```sh
-gcloud builds triggers create github \
-  --config-from-file=branch-trigger.yaml \
-  --region=$REGION
+gcloud beta builds triggers import --source=trigger-branch.yaml --region=$REGION
 ```
 
 - Review the trigger
 
-by going to the [Cloud Build Triggers page](https://console.cloud.google.com/cloud-build/triggers) in the Cloud Console:
+```sh
+gcloud beta builds triggers list \
+  --format="table(name, id, filename, description)" --region $REGION
+```
+
+or by going to the [Cloud Build Triggers page](https://console.cloud.google.com/cloud-build/triggers) in the Cloud Console.
 
 ## Learn more
 

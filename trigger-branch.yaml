@@ -1,5 +1,5 @@
-name: branch-trigger
-description: Trigger builds on all branches but main, master, dev, and develop
+name: branch
+description: Trigger builds on all branches but main/master and dev/develop
 github:
   name: java-11-hw
   owner: dzivkovi
