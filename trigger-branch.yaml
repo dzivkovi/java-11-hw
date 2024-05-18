@@ -1,0 +1,9 @@
+name: branch
+description: Trigger builds on all branches but main/master and dev/develop
+github:
+  name: java-11-hw
+  owner: dzivkovi
+  push:
+    branch: ^(main|master|dev|develop)$
+    invertRegex: true
+filename: cloudbuild-branch.yaml

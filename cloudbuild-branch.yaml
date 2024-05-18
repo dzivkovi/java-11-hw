@@ -10,11 +10,11 @@ substitutions:
   _APPLICATION_NAME: java-11-hw 
   _APPLICATION_RUNTIME_VERSION: "17"
   _REGION: us-central1
+
   _AUTHENTICATION: "--allow-unauthenticated"
   _IMAGE_NAME: "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_TEAM}/${_APPLICATION_NAME}"
   _TAG: ${SHORT_SHA:-"shell-run"}       # $SHORT_SHA defined when invoked by triggers
   _BRANCH_NAME: ${BRANCH_NAME:-"demo"}  # $BRANCH_NAME defined when invoked by triggers
-  _SANITIZED_BRANCH_NAME: $(echo ${_BRANCH_NAME} | sed 's/[^a-zA-Z0-9-]/-/g')
 
 # Allow dynamic variable substitutions
 options:
@@ -43,7 +43,7 @@ steps:
     args: 
       - '-c'
       - |
-          docker tag ${_IMAGE_NAME} ${_IMAGE_NAME}:${_TAG}
+          docker tag ${_IMAGE_NAME} ${_IMAGE_NAME}:${_TAG} && \
           docker push ${_IMAGE_NAME}:${_TAG}
 
 ### Test
@@ -56,13 +56,17 @@ steps:
           echo "No tests to run at this time."
 
 ### Deploy
+# Service name cannot exceed 63 characters, pulse it can contain only letters, numbers, and hyphens
   - id: "deploy image as a branch-named app"
     name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
     entrypoint: "bash"
     args: 
       - '-c'
       - |
-          gcloud run deploy ${_APPLICATION_NAME}-${_SANITIZED_BRANCH_NAME} ${_AUTHENTICATION} \
+          set -e  # Exit on error
+          app=$(echo ${_APPLICATION_NAME}-${_BRANCH_NAME} \
+            | sed 's/[^a-zA-Z0-9-]/-/g' | cut -c1-63)
+          gcloud run deploy ${app} ${_AUTHENTICATION} \
             --platform managed \
             --project $PROJECT_ID \
             --region ${_REGION} \
