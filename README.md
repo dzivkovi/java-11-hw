@@ -302,13 +302,22 @@ gcloud projects add-iam-policy-binding ${PROJECT_ID} \
 
 In this section, you enable developers with a unique URL for development branches in Git. Each branch is represented by a URL identified by the branch name. Commits to the branch trigger a deployment, and the updates are accessible at that same URL.  
 
-- Set up the trigger:
+- Set up the triggers:
 
 ```sh
+# Push to a branch event to build and deploy DEMO environments
 gcloud beta builds triggers import --source=trigger-branch.yaml --region=$REGION
+# Pull request event to build immutable immage and deploy it DEV environment
+gcloud beta builds triggers import --source=trigger-pr-dev.yaml --region=$REGION
+# Manual trigger to promote 'latest' image to UAT. Requires approval
+gcloud beta builds triggers import --source=trigger-manual.yaml --region=$REGION
+# Pull request event to deploy pre-production STG environment.
+gcloud beta builds triggers import --source=trigger-pr-main.yaml --region=$REGION
+# Push new tag event to deploy PROD relese from tested image. Requires approval
+gcloud beta builds triggers import --source=trigger-tag-prod.yaml --region=$REGION
 ```
 
-- Review the trigger
+- Review the triggers
 
 ```sh
 gcloud beta builds triggers list \
@@ -316,6 +325,23 @@ gcloud beta builds triggers list \
 ```
 
 or by going to the [Cloud Build Triggers page](https://console.cloud.google.com/cloud-build/triggers) in the Cloud Console.
+
+## Testing the Deployment
+
+After the build completes, you can test the deployment by accessing the application URL, which is based on the branch name. For example:
+
+- the URL for the `feature/my-new-feature` branch would be `https://appname-feature-my-new-feature-something.run.app`,
+- the URL for the `dev` branch would be `https://appname-dev-something.run.app`.
+
+When Cloud Run deployments do not use `--allow-unauthenticated` flag (which is recommended), you need to authenticate to access the URL. Here is an example using `curl` and the `gcloud` CLI to authenticate and access the URL:
+
+```sh
+# Here, the Appname is composed of Cloud Run service ('java-11-hw'), hyphenated ('-') with sanitized branch name ('dev'): java-11-hw-dev
+APP_URL=$(gcloud run services describe java-11-hw-dev \
+  --platform managed --region $REGION --format=json | jq --raw-output ".status.url")
+echo $APP_URL
+curl -X GET -H "Authorization: Bearer $(gcloud auth print-identity-token)" $APP_URL/books
+```
 
 ## Learn more
 
