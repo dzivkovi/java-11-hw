@@ -1,0 +1,8 @@
+name: stg
+description: Deploy the 'latest' tested container to STG (pre-production) environment
+github:
+  name: java-11-hw
+  owner: dzivkovi
+  pullRequest:
+    branch: ^(main|master)$
+filename: cloudbuild-stg.yaml

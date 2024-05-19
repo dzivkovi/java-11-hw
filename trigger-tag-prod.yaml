@@ -1,0 +1,10 @@
+name: prod
+description: Release the 'latest' tested container to PROD environment
+github:
+  name: java-11-hw
+  owner: dzivkovi
+  push:
+    tag: ^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$
+approvalConfig:
+  approvalRequired: true
+filename: cloudbuild-prod.yaml

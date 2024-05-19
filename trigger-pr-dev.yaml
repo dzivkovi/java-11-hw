@@ -1,0 +1,8 @@
+name: dev
+description: On Pull Request to merge code into dev branch, test/build/deploy the code to DEV environment
+github:
+  name: java-11-hw
+  owner: dzivkovi
+  pullRequest:
+    branch: ^(dev|develop)$
+filename: cloudbuild-dev.yaml
