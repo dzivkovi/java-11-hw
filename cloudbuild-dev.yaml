@@ -65,11 +65,11 @@ steps:
 ### Push the 'latest' tag
   - id: "Tag image as 'latest' and 'dev' before the push"
     name: "gcr.io/cloud-builders/docker"
-    entrypoint: "sh"
+    entrypoint: "bash"
     args:
       - '-c'
       - |
-          set -euo pipefail
+          set -euo pipefail   # Bash specific options
           docker tag ${_IMAGE_NAME}:${_TAG} ${_IMAGE_NAME}:latest && \
           docker tag ${_IMAGE_NAME}:${_TAG} ${_IMAGE_NAME}:dev && \
           docker push ${_IMAGE_NAME}:${_TAG} && \
@@ -84,7 +84,7 @@ steps:
       - '-c'
       - |
           set -e  # Exit on error
-          gcloud run deploy ${_APPLICATION_NAME}-DEV ${_AUTHENTICATION} \
+          gcloud run deploy ${_APPLICATION_NAME}-dev ${_AUTHENTICATION} \
             --platform managed \
             --project $PROJECT_ID \
             --region ${_REGION} \
