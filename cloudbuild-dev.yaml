@@ -9,8 +9,8 @@ substitutions:
   _TEAM: r2d2                           # Used as a Repo in the Artifact Registry
   _APPLICATION_NAME: java-11-hw 
   _APPLICATION_RUNTIME_VERSION: "17"
-  _REGION: us-central1
 
+  _REGION: us-central1
   # Requires authentication in all non-demo environments!
   _AUTHENTICATION: "--no-allow-unauthenticated"
   _IMAGE_NAME: "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_TEAM}/${_APPLICATION_NAME}"

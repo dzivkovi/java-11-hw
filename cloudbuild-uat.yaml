@@ -7,9 +7,9 @@
 # Default Values
 substitutions:
   _TEAM: r2d2                           # Used as a Repo in the Artifact Registry
-  _APPLICATION_NAME: java-11-hw 
-  _REGION: us-central1
+  _APPLICATION_NAME: java-11-hw
 
+  _REGION: us-central1
   _IMAGE_NAME: "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_TEAM}/${_APPLICATION_NAME}"
 
 # Allow dynamic variable substitutions
