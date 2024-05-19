@@ -8,11 +8,9 @@
 substitutions:
   _TEAM: r2d2                           # Used as a Repo in the Artifact Registry
   _APPLICATION_NAME: java-11-hw 
-  _APPLICATION_RUNTIME_VERSION: "17"
   _REGION: us-central1
 
   _IMAGE_NAME: "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_TEAM}/${_APPLICATION_NAME}"
-  _TAG: "latest"
 
 # Allow dynamic variable substitutions
 options:
@@ -29,11 +27,9 @@ steps:
       - '-c'
       - |
           set -e  # Exit on error
-          gcloud run deploy ${_APPLICATION_NAME}-UAT \
+          gcloud run deploy ${_APPLICATION_NAME}-uat \
             --platform managed \
             --project $PROJECT_ID \
             --region ${_REGION} \
             --image ${_IMAGE_NAME}:latest
 
-images:
-- ${_IMAGE_NAME}

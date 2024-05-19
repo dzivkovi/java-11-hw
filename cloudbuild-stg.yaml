@@ -12,7 +12,6 @@ substitutions:
   _REGION: us-central1
 
   _IMAGE_NAME: "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_TEAM}/${_APPLICATION_NAME}"
-  _TAG: "latest"
 
 # Allow dynamic variable substitutions
 options:
@@ -34,6 +33,3 @@ steps:
             --project $PROJECT_ID \
             --region ${_REGION} \
             --image ${_IMAGE_NAME}:latest
-
-images:
-- ${_IMAGE_NAME}
