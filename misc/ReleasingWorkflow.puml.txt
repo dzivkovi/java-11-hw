@@ -1,0 +1,30 @@
+actor Developer
+participant GoogleCloudBuild as "GCP Cloud Build"
+participant DEMO
+database SonarQube
+participant DEV
+participant UAT
+participant STG
+participant PROD
+
+Developer -> Developer: Create a new Git `feature` branch from `dev`
+Developer -> Developer: Development work in `feature` branch
+
+Developer -> GoogleCloudBuild: Push changes to the `feature` branch
+
+GoogleCloudBuild -> DEMO: Build and deploy to DEMO environment
+
+Developer -> GoogleCloudBuild: Create PR to merge `feature` to `dev` branch
+GoogleCloudBuild -> SonarQube: Validate source code readiness
+GoogleCloudBuild -> GoogleCloudBuild: Build immutable container. Tag it as 'latest'
+GoogleCloudBuild -> DEV: Deploy 'latest' image to DEV environment
+
+GoogleCloudBuild -> DEMO: On success: Delete DEMO environment
+
+Developer -> GoogleCloudBuild: Manually kick off deployment to UAT environment
+GoogleCloudBuild -> UAT: Deploy the 'latest' application
+Developer -> GoogleCloudBuild: Create PR to merge `dev` changes to `main` branch
+GoogleCloudBuild -> STG: Deploy the 'latest' application
+Developer -> GoogleCloudBuild: Create a tag to trigger a deployment to PROD environment
+GoogleCloudBuild -> PROD: Deploy the 'latest' application
+@enduml
