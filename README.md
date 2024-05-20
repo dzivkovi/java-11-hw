@@ -1,6 +1,10 @@
 # Getting started with Google Cloud Build
 
-Replace my username (dzivkovi), GitHub repo and Git project specific info by yours.
+## Code to Release Workflow
+
+This diagram represents implemented "Code to Release" Workflow.
+
+![Releasing Workflow](misc/ReleasingWorkflow.puml.png)
 
 ## Create initial source-code project
 
@@ -55,6 +59,8 @@ gh repo create hello-nodejs-typescript --private
 ```
 
 ### Push the new branch upstream ('-u') to the Remote Repository
+
+Replace my username (dzivkovi), GitHub repo and Git project specific info by yours:
 
 ```sh
 git remote add origin https://github.com/dzivkovi/hello-nodejs-typescript.git
@@ -225,7 +231,7 @@ To prevent direct changes to the `dev` branch, you would need to set up branch p
 
 ### Prepare the GCP environment
 
-One-off acrivites, that might have already been performed by your GCP or Project admins:
+One-off activities, that might have already been performed by your GCP or Project admins:
 
 ```sh
 # Enabled GCP Services
@@ -275,7 +281,7 @@ gcloud projects add-iam-policy-binding ${PROJECT_ID} \
   --role=roles/artifactregistry.writer
 ```
 
-#### Ceate a new SA
+#### Create a new SA
 
 If you don't have permission to update Cloud Build Service Account, create a new one:
 
@@ -300,7 +306,7 @@ gcloud projects add-iam-policy-binding ${PROJECT_ID} \
 
 ### Setup Branch Triggers
 
-We enable developers to demo their work via a Cloud Run deplyment named after their Git branches. Push to any branch not named `^(main|master|dev|develop)$` will trigger a branch-named deployment.
+We enable developers to demo their work via a Cloud Run deployment named after their Git branches. Push to any branch not named `^(main|master|dev|develop)$` will trigger a branch-named deployment.
 
 - Set up the triggers:
 
@@ -309,9 +315,9 @@ We enable developers to demo their work via a Cloud Run deplyment named after th
   gcloud beta builds triggers import --source=.ci/trigger-branch.yaml --region=$REGION
   ```
 
-### Triggers to cereat DEV, UAT, STG, PROD environments
+### Triggers to create DEV, UAT, STG, PROD environments
 
-- Pull request event to build immutable immage and deploy it DEV environment:
+- Pull request event to build immutable image and deploy it DEV environment:
 
   ```sh
   gcloud beta builds triggers import --source=.ci/trigger-pr-dev.yaml --region=$REGION
@@ -331,7 +337,7 @@ We enable developers to demo their work via a Cloud Run deplyment named after th
   gcloud beta builds triggers import --source=.ci/trigger-pr-main.yaml --region=$REGION
   ```
 
-- Push new tag event to deploy PROD relese from tested image:
+- Push new tag event to deploy PROD release from tested image:
 
   ```sh
   gcloud beta builds triggers import --source=.ci/trigger-tag-prod.yaml --region=$REGION
@@ -382,7 +388,7 @@ CI/CD Pipeline is triggered by pushing changes to the repository, pull requests,
    gcloud builds submit --config .ci/cloudbuild-dev.yaml
    ```
 
-2. Test the code, Build the immutable container image and deploy it ot DEV environment:
+2. Test the code, build the immutable container image, and deploy it to the DEV environment:
 
     ```sh
     gcloud builds submit --config .ci/cloudbuild-dev.yaml
@@ -403,16 +409,16 @@ CI/CD Pipeline is triggered by pushing changes to the repository, pull requests,
 5. Production environment deployment:
 
     ```sh
-    gcloud builds submit --config .ci/cloudbuild-prod.yaml`
+    gcloud builds submit --config .ci/cloudbuild-prod.yaml
     ```
 
-## Aoutomated Pipeline Flow
+## Automated Pipeline Flow
 
 1. When you push changes to the repository, the pipeline will be triggered automatically. The pipeline will build and deploy the application to the DEMO environment.
 
 2. Once happy with the changes, create a pull request to merge the changes to the `dev` branch. The pipeline will build and deploy the application to the DEV environment.
 
-3. When QA team is ready to test the DEV release, execute the manual trigger to deploy the application to the UAT environment:
+3. When the QA team is ready to test the DEV release, execute the manual trigger to deploy the application to the UAT environment:
 
     ```sh
     git checkout dev
@@ -426,7 +432,7 @@ CI/CD Pipeline is triggered by pushing changes to the repository, pull requests,
     ```sh
     gh pr create --base main --head dev \
       --title "Ready for Staging" \
-      --body "Descriptibe why container is ready to be merged into 'main' branch and deployed to the STG environment"
+      --body "Describe why the app is ready to be merged into 'main' branch and deployed to the STG environment"
     ```
 
 5. After the STG environment is tested, create a tag to trigger the deployment to the PROD environment. E.g.:
