@@ -1,5 +1,5 @@
 ' This diagram represents the "Code to Release" Workflow.
-' Visualise it at https://www.plantuml.com/plantuml/uml/
+' Visualize it at https://www.plantuml.com/plantuml/uml/
 '
 actor Developer
 participant GoogleCloudBuild as "GCP Cloud Build"
