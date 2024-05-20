@@ -296,28 +296,50 @@ gcloud projects add-iam-policy-binding ${PROJECT_ID} \
   --role="roles/compute.admin"
 ```
 
-## Enabling Branch Deployments
+## Delivery Pipeline Setup
 
-### Setup Branch Trigger
+### Setup Branch Triggers
 
-In this section, you enable developers with a unique URL for development branches in Git. Each branch is represented by a URL identified by the branch name. Commits to the branch trigger a deployment, and the updates are accessible at that same URL.  
+We enable developers to demo their work via a Cloud Run deplyment named after their Git branches. Push to any branch not named `^(main|master|dev|develop)$` will trigger a branch-named deployment.
 
 - Set up the triggers:
 
-```sh
-# Push to a branch event to build and deploy DEMO environments
-gcloud beta builds triggers import --source=trigger-branch.yaml --region=$REGION
-# Pull request event to build immutable immage and deploy it DEV environment
-gcloud beta builds triggers import --source=trigger-pr-dev.yaml --region=$REGION
-# Manual trigger to promote 'latest' image to UAT. Requires approval
-gcloud beta builds triggers import --source=trigger-manual.yaml --region=$REGION
-# Pull request event to deploy pre-production STG environment.
-gcloud beta builds triggers import --source=trigger-pr-main.yaml --region=$REGION
-# Push new tag event to deploy PROD relese from tested image. Requires approval
-gcloud beta builds triggers import --source=trigger-tag-prod.yaml --region=$REGION
-```
+  ```sh
+  # Push to a branch event to build and deploy DEMO environments
+  gcloud beta builds triggers import --source=trigger-branch.yaml --region=$REGION
+  ```
 
-- Review the triggers
+### Triggers to cereat DEV, UAT, STG, PROD environments
+
+- Pull request event to build immutable immage and deploy it DEV environment:
+
+  ```sh
+  gcloud beta builds triggers import --source=trigger-pr-dev.yaml --region=$REGION
+  ```
+
+- Manual trigger to promote 'latest' image to UAT:
+
+    ```sh
+    gcloud beta builds triggers import --source=trigger-manual.yaml --region=$REGION
+    ```
+
+  This step requires approval.
+
+- Pull request event to deploy pre-production STG environment:
+
+    ```sh
+    gcloud beta builds triggers import --source=trigger-pr-main.yaml --region=$REGION
+    ```
+
+- Push new tag event to deploy PROD relese from tested image:
+
+  ```sh
+  gcloud beta builds triggers import --source=trigger-tag-prod.yaml --region=$REGION
+  ```
+
+  It also requires approval.
+
+### Review the triggers
 
 ```sh
 gcloud beta builds triggers list \
@@ -326,7 +348,65 @@ gcloud beta builds triggers list \
 
 or by going to the [Cloud Build Triggers page](https://console.cloud.google.com/cloud-build/triggers) in the Cloud Console.
 
-## Testing the Deployment
+## Handling Secrets
+
+Cloud build now supports [Secret Manager](https://cloud.google.com/cloud-build/docs/securing-builds/use-secrets) for accessing sensitive data. This is the recommended way to store and access.
+
+### Prepare the environment
+
+- Before you can use secrets in your builds, you need to grant the Cloud Build service account the necessary permissions to access the secrets:
+
+  ```sh
+  gcloud projects add-iam-policy-binding $PROJECT_ID --member=serviceAccount:$PROJECT_NUMBER@cloudbuild.gserviceaccount.com --role=roles/secretmanager.secretAccessor
+  ```
+
+- Create your secrets. E.g. this POC will need a SonarQube API key used:
+
+  ```sh
+  echo -n "$SONAR_TOKEN" | gcloud secrets create SONAR_TOKEN --replication-policy=automatic --data-file=-
+  ```
+
+### Validate your secret is in the Secret Manager
+
+```sh
+gcloud secrets versions access latest --secret=SONAR_TOKEN
+```
+
+## Manually Triggering Builds
+
+CI/CD Pipeline is triggered by pushing changes to the repository, pull requests, and release tagging, but you can also run/validate individual steps from the command line.
+
+1. Feature branch validation and demo deployments:
+
+   ```sh
+   gcloud builds submit --config cloudbuild-dev.yaml
+   ```
+
+2. Test the code, Build the immutable container image and deploy it ot DEV environment:
+
+    ```sh
+    gcloud builds submit --config cloudbuild-dev.yaml
+    ```
+
+3. UAT environment deployment:
+
+    ```sh
+    gcloud builds submit --config cloudbuild-uat.yaml
+    ```
+
+4. Staging environment deployment:
+
+    ```sh
+    gcloud builds submit --config cloudbuild-stg.yaml
+    ```
+
+5. Production environment deployment:
+
+    ```sh
+    gcloud builds submit --config cloudbuild-prod.yaml`
+    ```
+
+## Testing Deployments
 
 After the build completes, you can test the deployment by accessing the application URL, which is based on the branch name. For example:
 
@@ -338,7 +418,7 @@ When Cloud Run deployments do not use `--allow-unauthenticated` flag (which is r
 ```sh
 # Here, the Appname is composed of Cloud Run service ('java-11-hw'), hyphenated ('-') with sanitized branch name ('dev'): java-11-hw-dev
 APP_URL=$(gcloud run services describe java-11-hw-dev \
-  --platform managed --region $REGION --format=json | jq --raw-output ".status.url")
+  --platform managed --region $REGION --format 'value(status.url)')
 echo $APP_URL
 curl -X GET -H "Authorization: Bearer $(gcloud auth print-identity-token)" $APP_URL/books
 ```
