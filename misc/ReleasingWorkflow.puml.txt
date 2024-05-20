@@ -1,7 +1,7 @@
 actor Developer
 participant GoogleCloudBuild as "GCP Cloud Build"
-participant DEMO
 database SonarQube
+participant DEMO
 participant DEV
 participant UAT
 participant STG
@@ -27,4 +27,13 @@ Developer -> GoogleCloudBuild: Create PR to merge `dev` changes to `main` branch
 GoogleCloudBuild -> STG: Deploy the 'latest' application
 Developer -> GoogleCloudBuild: Create a tag to trigger a deployment to PROD environment
 GoogleCloudBuild -> PROD: Deploy the 'latest' application
+
+' Define the Deployment Environments box
+box "Deployment Environments" #LightGray
+    participant DEMO
+    participant DEV
+    participant UAT
+    participant STG
+    participant PROD
+end box
 @enduml
