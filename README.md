@@ -306,7 +306,7 @@ We enable developers to demo their work via a Cloud Run deplyment named after th
 
   ```sh
   # Push to a branch event to build and deploy DEMO environments
-  gcloud beta builds triggers import --source=trigger-branch.yaml --region=$REGION
+  gcloud beta builds triggers import --source=.ci/trigger-branch.yaml --region=$REGION
   ```
 
 ### Triggers to cereat DEV, UAT, STG, PROD environments
@@ -314,27 +314,27 @@ We enable developers to demo their work via a Cloud Run deplyment named after th
 - Pull request event to build immutable immage and deploy it DEV environment:
 
   ```sh
-  gcloud beta builds triggers import --source=trigger-pr-dev.yaml --region=$REGION
+  gcloud beta builds triggers import --source=.ci/trigger-pr-dev.yaml --region=$REGION
   ```
 
 - Manual trigger to promote 'latest' image to UAT:
 
-    ```sh
-    gcloud beta builds triggers import --source=trigger-manual.yaml --region=$REGION
-    ```
+  ```sh
+  gcloud beta builds triggers import --source=.ci/trigger-manual.yaml --region=$REGION
+  ```
 
   This step requires approval.
 
 - Pull request event to deploy pre-production STG environment:
 
-    ```sh
-    gcloud beta builds triggers import --source=trigger-pr-main.yaml --region=$REGION
-    ```
+  ```sh
+  gcloud beta builds triggers import --source=.ci/trigger-pr-main.yaml --region=$REGION
+  ```
 
 - Push new tag event to deploy PROD relese from tested image:
 
   ```sh
-  gcloud beta builds triggers import --source=trigger-tag-prod.yaml --region=$REGION
+  gcloud beta builds triggers import --source=.ci/trigger-tag-prod.yaml --region=$REGION
   ```
 
   It also requires approval.
@@ -379,31 +379,31 @@ CI/CD Pipeline is triggered by pushing changes to the repository, pull requests,
 1. Feature branch validation and demo deployments:
 
    ```sh
-   gcloud builds submit --config cloudbuild-dev.yaml
+   gcloud builds submit --config .ci/cloudbuild-dev.yaml
    ```
 
 2. Test the code, Build the immutable container image and deploy it ot DEV environment:
 
     ```sh
-    gcloud builds submit --config cloudbuild-dev.yaml
+    gcloud builds submit --config .ci/cloudbuild-dev.yaml
     ```
 
 3. UAT environment deployment:
 
     ```sh
-    gcloud builds submit --config cloudbuild-uat.yaml
+    gcloud builds submit --config .ci/cloudbuild-uat.yaml
     ```
 
 4. Staging environment deployment:
 
     ```sh
-    gcloud builds submit --config cloudbuild-stg.yaml
+    gcloud builds submit --config .ci/cloudbuild-stg.yaml
     ```
 
 5. Production environment deployment:
 
     ```sh
-    gcloud builds submit --config cloudbuild-prod.yaml`
+    gcloud builds submit --config .ci/cloudbuild-prod.yaml`
     ```
 
 ## Testing Deployments

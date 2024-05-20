@@ -5,4 +5,4 @@ github:
   owner: dzivkovi
   pullRequest:
     branch: ^(dev|develop)$
-filename: cloudbuild-dev.yaml
+filename: .ci/cloudbuild-dev.yaml
