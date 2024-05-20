@@ -142,12 +142,20 @@ git push -u origin feature/my-new-feature
 
 ### Creating a Pull Request
 
-Create a pull request from your feature branch to `dev` using the GitHub CLI or GUI:
+Create a pull request (PR) from your feature branch to `dev` using the GitHub CLI (or GUI):
 
 ```sh
 gh pr create --base dev --head feature/my-new-feature \
   --title "My New Feature" \
   --body "Description of my new feature"
+```
+
+or PR to merge `dev` into `main` branch and trigger the deployment to the STG environment:
+
+```sh
+gh pr create --base main --head dev \
+  --title "Ready for Staging" \
+  --body "Descriptibe why container is ready to be merged into 'main' branch and deployed to the STG environment"
 ```
 
 #### Review and Merge Pull Requests
