@@ -1,4 +1,4 @@
-# Losely based on the existing "manifest.yml" file and the GCP labs: 
+# Loosely based on the existing "manifest.yml" file and the GCP labs: 
 # https://github.com/GoogleCloudPlatform/software-delivery-workshop/tree/main/labs/cloudrun-progression
 #
 # Implemented using workaround for 'build with pack and secrets manager not accessing environment variables' as per:
@@ -6,7 +6,7 @@
 
 # Default Values
 substitutions:
-  _TEAM: r2d2                           # Used as a Repo in the Artifact Registry
+  _TEAM: r2d2                             # Used as a Repo in the Artifact Registry
   _APPLICATION_NAME: java-11-hw 
   _APPLICATION_RUNTIME_VERSION: "17"
 
@@ -14,9 +14,9 @@ substitutions:
   # Requires authentication in all non-demo environments!
   _AUTHENTICATION: "--no-allow-unauthenticated"
   _IMAGE_NAME: "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_TEAM}/${_APPLICATION_NAME}"
-  _TAG: ${SHORT_SHA:-"shell-run"}       # $SHORT_SHA defined when invoked by triggers
-  _BRANCH_NAME: ${BRANCH_NAME:-"demo"}  # $BRANCH_NAME defined when invoked by triggers
-  _PULL_REQUEST_TARGET_BRANCH: ${PULL_REQUEST_TARGET_BRANCH:-"shell-run"}
+  _TAG: ${SHORT_SHA:-"shell-run"}         # $SHORT_SHA defined when invoked by triggers
+  _SOURCE_BRANCH: ${BRANCH_NAME:-"demo"}  # $BRANCH_NAME defined when invoked by triggers
+  _TARGET_BRANCH: ${PULL_REQUEST_TARGET_BRANCH:-"shell-run"}
 
 # Allow dynamic variable substitutions
 options:
@@ -42,6 +42,7 @@ steps:
   - id: "Run tests (adjust as needed)"
     name: 'gcr.io/cloud-builders/mvn'
     entrypoint: bash
+    secretEnv: ['SONAR_TOKEN']  # Specify the secret environment variable
     args:
       - '-c'
       - |
@@ -51,7 +52,7 @@ steps:
           -Dsonar.projectName=java-11-hw \
           -Dsonar.organization=dzivkovi \
           -Dsonar.host.url=https://sonarcloud.io \
-          -Dsonar.token="${_SONAR_TOKEN}" \
+          -Dsonar.token=$$SONAR_TOKEN \
           -Dsonar.sources=src/main/java \
           -Dsonar.tests=src/test/java \
           -Dsonar.java.binaries=target/classes \
@@ -98,10 +99,10 @@ steps:
       - "-c"
       - |
         # Get the source branch name
-        source_branch_name=${_BRANCH_NAME}
+        source_branch_name=${_SOURCE_BRANCH}
 
         # Get the target branch name (should be DEV)
-        target_branch_name=${_PULL_REQUEST_TARGET_BRANCH}
+        target_branch_name=${_TARGET_BRANCH}
 
         # Exit if any command fails
         set -e
@@ -122,6 +123,11 @@ steps:
         else
           echo "Skipping Cloud Run service deletion for branch: $target_branch_name"
         fi
+
+availableSecrets:
+  secretManager:
+    - versionName: "projects/$PROJECT_ID/secrets/SONAR_TOKEN/versions/latest"
+      env: "SONAR_TOKEN"
 
 images:
 - ${_IMAGE_NAME}
