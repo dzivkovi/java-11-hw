@@ -5,4 +5,4 @@ github:
   owner: dzivkovi
   pullRequest:
     branch: ^(main|master)$
-filename: cloudbuild-stg.yaml
+filename: .ci/cloudbuild-stg.yaml

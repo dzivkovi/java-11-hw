@@ -3,7 +3,7 @@ description: Deploy the 'latest' container to UAT environment
 approvalConfig:
   approvalRequired: true
 gitFileSource:
-  path: cloudbuild-uat.yaml
+  path: .ci/cloudbuild-uat.yaml
   repoType: GITHUB
   revision: refs/heads/dev
   uri: https://github.com/dzivkovi/java-11-hw
