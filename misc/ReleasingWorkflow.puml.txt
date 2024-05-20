@@ -1,3 +1,6 @@
+' This diagram represents the "Code to Release" Workflow.
+' Visualise it at https://www.plantuml.com/plantuml/uml/
+'
 actor Developer
 participant GoogleCloudBuild as "GCP Cloud Build"
 database SonarQube
@@ -21,12 +24,12 @@ GoogleCloudBuild -> DEV: Deploy 'latest' image to DEV environment
 
 GoogleCloudBuild -> DEMO: On success: Delete DEMO environment
 
-Developer -> GoogleCloudBuild: Manually kick off deployment to UAT environment
-GoogleCloudBuild -> UAT: Deploy the 'latest' application
+Developer -> GoogleCloudBuild: Manually trigger deployment to UAT environment
+GoogleCloudBuild -> UAT: Deploy the 'latest' application to UAT
 Developer -> GoogleCloudBuild: Create PR to merge `dev` changes to `main` branch
-GoogleCloudBuild -> STG: Deploy the 'latest' application
-Developer -> GoogleCloudBuild: Create a tag to trigger a deployment to PROD environment
-GoogleCloudBuild -> PROD: Deploy the 'latest' application
+GoogleCloudBuild -> STG: Deploy the 'latest' application to STG
+Developer -> GoogleCloudBuild: Git tag release for PROD deployment
+GoogleCloudBuild -> PROD: Deploy the 'latest' application to PROD
 
 ' Define the Deployment Environments box
 box "Deployment Environments" #LightGray
