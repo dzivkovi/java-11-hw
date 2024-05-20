@@ -1,0 +1,35 @@
+# Losely based on the existing "manifest.yml" file and the GCP labs: 
+# https://github.com/GoogleCloudPlatform/software-delivery-workshop/tree/main/labs/cloudrun-progression
+#
+# Implemented using workaround for 'build with pack and secrets manager not accessing environment variables' as per:
+# https://stackoverflow.com/questions/73176741/google-cloud-build-with-pack-and-secrets-manager-not-accessing-environment-varia
+
+# Default Values
+substitutions:
+  _TEAM: r2d2                           # Used as a Repo in the Artifact Registry
+  _APPLICATION_NAME: java-11-hw
+
+  _REGION: us-central1
+  _IMAGE_NAME: "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_TEAM}/${_APPLICATION_NAME}"
+
+# Allow dynamic variable substitutions
+options:
+  dynamic_substitutions: true
+
+# Start the build with the following
+steps:
+
+### Deploy to UAT environment
+  - id: "Deploy image to UAT"
+    name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    entrypoint: "bash"
+    args: 
+      - '-c'
+      - |
+          set -e  # Exit on error
+          gcloud run deploy ${_APPLICATION_NAME}-uat \
+            --platform managed \
+            --project $PROJECT_ID \
+            --region ${_REGION} \
+            --image ${_IMAGE_NAME}:latest
+
