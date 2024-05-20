@@ -150,14 +150,6 @@ gh pr create --base dev --head feature/my-new-feature \
   --body "Description of my new feature"
 ```
 
-or PR to merge `dev` into `main` branch and trigger the deployment to the STG environment:
-
-```sh
-gh pr create --base main --head dev \
-  --title "Ready for Staging" \
-  --body "Descriptibe why container is ready to be merged into 'main' branch and deployed to the STG environment"
-```
-
 #### Review and Merge Pull Requests
 
 After your pull request is reviewed and approved, merge it through the GitHub website. Choose the appropriate merge strategy (Merge commit, Squash and merge, Rebase and merge).
@@ -412,6 +404,39 @@ CI/CD Pipeline is triggered by pushing changes to the repository, pull requests,
 
     ```sh
     gcloud builds submit --config .ci/cloudbuild-prod.yaml`
+    ```
+
+## Aoutomated Pipeline Flow
+
+1. When you push changes to the repository, the pipeline will be triggered automatically. The pipeline will build and deploy the application to the DEMO environment.
+
+2. Once happy with the changes, create a pull request to merge the changes to the `dev` branch. The pipeline will build and deploy the application to the DEV environment.
+
+3. When QA team is ready to test the DEV release, execute the manual trigger to deploy the application to the UAT environment:
+
+    ```sh
+    git checkout dev
+    git pull
+
+    gcloud builds submit --config .ci/cloudbuild-uat.yaml
+    ```
+
+4. Once the QA team has tested the application, the code is ready to be merged from `dev` to `main` branch. Create a pull request to merge the changes to the `main` branch. The pipeline will build and deploy the application to the STG environment. E.g.:
+
+    ```sh
+    gh pr create --base main --head dev \
+      --title "Ready for Staging" \
+      --body "Descriptibe why container is ready to be merged into 'main' branch and deployed to the STG environment"
+    ```
+
+5. After the STG environment is tested, create a tag to trigger the deployment to the PROD environment. E.g.:
+
+    ```sh
+    git checkout main
+    git pull
+
+    git tag -a v1.0.0 -m "Your message about this release"
+    git push origin v1.0.0
     ```
 
 ## Testing Deployments
